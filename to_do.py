@@ -10,24 +10,34 @@ firebase_admin.initialize_app(key, {"databaseURL": "https://to-do-1c749-default-
 
 
 
-# database connected
-print("\nDatabase is connected.\n")
-
-# set database reference
-pointer = db.reference("/")
+# set database reference pointer
+root = db.reference("/")
 
 # add a task to the database
 current = datetime.datetime.now()
 task_number = 1
 db.reference("/").update({f"Task {task_number}": ["New task details", f"{current}"]})
-print(f"Database contents: {pointer.get()}")
+print(f"Database contents: {root.get()}")
 
 # delete a task in the database
 db.reference(f"/Task {task_number}").delete()
-print(f"Database contents: {pointer.get()}")
+print(f"Database contents: {root.get()}")
 
 
+def add_task(task_number, task):
+    pass
 
+
+def delete_task(task):
+    pass
+
+
+def update_task(task_number, task):
+    pass
+
+
+def view_tasks():
+    pass
 
 
 # main function
