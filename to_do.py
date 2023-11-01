@@ -4,23 +4,27 @@ from firebase_admin import db, credentials
 import datetime
 
 # initialize firebase admin using private key
-cred = credentials.Certificate("C:/Users/jerry/OneDrive/Documents/BYU-Idaho/BYU-I Fall 2023/CSE 310/Software Assignments/serviceAccountKey.json")
-firebase_admin.initialize_app(cred, {"databaseURL": "https://to-do-1c749-default-rtdb.firebaseio.com/"})
+key = credentials.Certificate("C:/Users/jerry/OneDrive/Documents/BYU-Idaho/BYU-I Fall 2023/CSE 310/Software Assignments/serviceAccountKey.json")
+firebase_admin.initialize_app(key, {"databaseURL": "https://to-do-1c749-default-rtdb.firebaseio.com/"})
+
+
+
+
+# database connected
+print("\nDatabase is connected.\n")
 
 # set database reference
-root = db.reference("/")
-
-
+pointer = db.reference("/")
 
 # add a task to the database
 current = datetime.datetime.now()
 task_number = 1
 db.reference("/").update({f"Task {task_number}": ["New task details", f"{current}"]})
-print(f"Database contents: {root.get()}")
+print(f"Database contents: {pointer.get()}")
 
 # delete a task in the database
 db.reference(f"/Task {task_number}").delete()
-print(f"Database contents: {ref.get()}")
+print(f"Database contents: {pointer.get()}")
 
 
 
@@ -59,7 +63,7 @@ def main():
            user_choice == "5"):
             break
         
-        # if choice is not good, print message and loop again
+        # if user_choice is not good, print message and loop again
         else:
             print("\nInvalid input. Please select 1, 2, or 3.\n")
 
