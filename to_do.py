@@ -1,7 +1,8 @@
-# import firebase module with credentials
+# import needed modules
 import firebase_admin
 from firebase_admin import db, credentials
 import datetime
+import threading
 
 # initialize firebase admin using private key
 key = credentials.Certificate("../serviceAccountKey.json")
