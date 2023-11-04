@@ -15,6 +15,7 @@ root = db.reference("/")
 
 # declare a global variable to hold the initial state of the database
 initial_state = root.get()
+print(initial_state)
 
 
 # function to monitor Firebase realtime database
