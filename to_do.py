@@ -3,11 +3,28 @@ import firebase_admin
 from firebase_admin import db, credentials
 import datetime
 import threading
+import time
 
 # initialize firebase admin using private key
 key = credentials.Certificate("../serviceAccountKey.json")
 firebase_admin.initialize_app(key, {"databaseURL": 
     "https://to-do-1c749-default-rtdb.firebaseio.com/"})
+
+# create reference to database root
+root = db.reference("/")
+control = True
+
+# function to monitor Firebase rtdb
+def monitor(initial_state):
+    
+    # while the program is running, check for changes to the database
+    # give an update every thirty seconds
+    while control == True:
+        time.sleep(30)
+        current_state = root.get()
+        if initial_state != current_state:
+            print("\n\033[1;31mThe database has changed.\033[00m\n")
+            initial_state = current_state
 
 
 # function to add a task to the database
@@ -187,8 +204,7 @@ def get_time():
 # main function
 def main():
 
-    # set defaults for variable scope
-    task = ""
+    # set variable defaults for scope
     user_choice = ""
     task_number = 0
 
@@ -214,18 +230,17 @@ def main():
             
             # if user choice is valid, break out of loop
             if(user_choice == "1" or 
-            user_choice == "2" or 
-            user_choice == "3" or
-            user_choice == "4" or
-            user_choice == "5"):
+               user_choice == "2" or 
+               user_choice == "3" or
+               user_choice == "4" or
+               user_choice == "5"):
                 break
             
             # if user_choice is not good, inform user and loop again
             else:
                 print("\nInvalid input. Please select 1, 2, 3, 4, or 5.\n")
 
-        #set database root and create dictionary with database data
-        root = db.reference("/")
+        # create dictionary with database data
         tasks = root.get()
 
         # act on user choice
@@ -252,7 +267,7 @@ def main():
                 # make sure the choice can be cast to integer
                 if user_choice.isdigit():
 
-                    # cast to integer and subtract one to match actual element
+                    # cast to integer and subtract one to match actual node
                     task_number = int(user_choice) - 1
 
                     # verify the input falls within the dictionary length
@@ -311,9 +326,15 @@ def main():
         elif (user_choice == "5"):
             print("\nGoodbye. Thanks for using ", end="")
             print("\033[1;36mFirebase To-Do Task Manager\033[00m!\n")
+            control = False
             return 0
 
 
 # if run directly, call main function, otherwise do nothing
 if(__name__ == "__main__"):
-    main()
+    
+    # start main thread
+    threading.Thread(target = main).start()
+
+    # start monitor thread
+    threading.Thread(target = monitor, daemon=True, args=(root.get(),)).start()
