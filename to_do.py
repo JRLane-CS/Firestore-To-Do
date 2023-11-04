@@ -12,24 +12,33 @@ firebase_admin.initialize_app(key, {"databaseURL":
 
 # create reference to database root
 root = db.reference("/")
-control = True
 
-# function to monitor Firebase rtdb
-def monitor(initial_state):
+# declare a global variable to hold the initial state of the database
+initial_state = root.get()
+
+
+# function to monitor Firebase realtime database
+def monitor():
     
+    # get initial database state
+    global initial_state
+
     # while the program is running, check for changes to the database
-    # give an update every thirty seconds
-    while control == True:
-        time.sleep(30)
+    # every ten seconds, alert user if database changes
+    while True:
+        time.sleep(10)
         current_state = root.get()
         if initial_state != current_state:
-            print("\n\033[1;31mThe database has changed.\033[00m\n")
+            print("\n\n\033[1;31mThe database unexpectedly changed.\033[00m\n")
             initial_state = current_state
 
 
 # function to add a task to the database
 def add_task(tasks):
     
+    # use initial_state as a global
+    global initial_state
+
     # create task prompt
     print("\nEnter the task to be added to your to-do list:")
     task = input()
@@ -62,6 +71,9 @@ def add_task(tasks):
         # add to database 
         db.reference("/").update(
             {f"Task {task_number}": [f"{task}", f"{date}", f"{time}"]})
+        
+        # update the initial state so the database monitor knows of change
+        initial_state = root.get()
 
         # show user what was added
         print(f"\nOn \033[1;33m{date}\033[00m at ", end="")
@@ -75,6 +87,9 @@ def add_task(tasks):
 
 # function to delete a task from the database
 def delete_task(task_number, tasks):
+    
+    # use initial_state as a global
+    global initial_state
     
     # find key in tasks dictionary by calling find key function
     key_name = find_key(task_number, tasks)
@@ -95,6 +110,11 @@ def delete_task(task_number, tasks):
     # delete the task
     print("\nPlease wait. Deleting selected task...")
     db.reference(f"/{key_name}").delete()
+        
+    # update the initial state so the database monitor knows of change
+    initial_state = root.get()
+
+    # display deleted message to user
     print(f"\nTask\n\033[1;33m'{old_task}'\033[00m")
     print(f"was deleted on \033[1;33m{get_date()}\033[00m", end=" ")
     print(f"at \033[1;33m{get_time()}\033[00m.\n")
@@ -102,6 +122,9 @@ def delete_task(task_number, tasks):
 
 # function to update an existing task in the database
 def update_task(task_number, tasks):
+    
+    # use initial_state as a global
+    global initial_state
     
     # find key in tasks dictionary by calling find key function
     key_name = find_key(task_number, tasks)
@@ -116,7 +139,7 @@ def update_task(task_number, tasks):
 
     # if user didn't choose y, return to menu
     if user_choice.lower() != "y":
-        print("Exiting update task and returning to menu...")
+        print("\nExiting update task and returning to menu...")
         return
 
     # create prompt
@@ -124,7 +147,7 @@ def update_task(task_number, tasks):
     task = input()
 
     # verify the update with the user
-    print(f"\033[1;31mYou are about to update this task:\033[00m")
+    print(f"\n\033[1;31mYou are about to update this task:\033[00m")
     print(f"\033[1;33m{old_task}\033[00m")
     print("with")
     print(f"\033[1;33m{task}\033[00m")
@@ -142,6 +165,9 @@ def update_task(task_number, tasks):
     # update the task in the database
     db.reference("/").update(
             {f"{key_name}": [f"{task}", f"{date}", f"{time}"]})
+        
+    # update the initial state so the database monitor knows of change
+    initial_state = root.get()
 
     # inform user of the changes
     print(f"\nOn {date} at {time} task")
@@ -330,11 +356,11 @@ def main():
             return 0
 
 
-# if run directly, call main function, otherwise do nothing
+# if run directly, start threads, otherwise do nothing
 if(__name__ == "__main__"):
     
     # start main thread
-    threading.Thread(target = main).start()
+    threading.Thread(target=main).start()
 
     # start monitor thread
-    threading.Thread(target = monitor, daemon=True, args=(root.get(),)).start()
+    threading.Thread(target=monitor, daemon=True).start()
