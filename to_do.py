@@ -18,10 +18,10 @@ initial_state = root.get()
 print(initial_state)
 
 
-# function to monitor Firebase realtime database
+# threaded function to monitor Firebase database in realtime
 def monitor():
     
-    # get initial database state
+    # initial state is a global variable used for db alteration checking
     global initial_state
 
     # while the program is running, check for changes to the database
@@ -37,7 +37,7 @@ def monitor():
 # function to add a task to the database
 def add_task(tasks):
     
-    # use initial_state as a global
+    # use initial_state as a global to update monitor thread
     global initial_state
 
     # create task prompt
@@ -89,7 +89,7 @@ def add_task(tasks):
 # function to delete a task from the database
 def delete_task(task_number, tasks):
     
-    # use initial_state as a global
+    # use initial_state as a global to update monitor thread
     global initial_state
     
     # find key in tasks dictionary by calling find key function
@@ -124,7 +124,7 @@ def delete_task(task_number, tasks):
 # function to update an existing task in the database
 def update_task(task_number, tasks):
     
-    # use initial_state as a global
+    # use initial_state as a global to update monitor thread
     global initial_state
     
     # find key in tasks dictionary by calling find key function

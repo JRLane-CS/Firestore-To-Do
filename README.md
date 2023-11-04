@@ -30,8 +30,9 @@ The reason I developed this application was to familiarize myself with the opera
 A side benefit of this project was the opportunity to learn more about how to use pseudo-threading in Python. It was fun experiementing with this capability so that I could have two parts of the program running simultaneously. This permits the application to monitor the online database in realtime for unexpected changes.
 
 ## Video Demo
+Here's a walkthrough of the application's code and demonstration of the application as it runs:
 
-[Software Demo Video](http://youtube.link.goes.here)
+[Firebase To-Do Task Manager Demo Video](https://youtu.be/kVBbEdTDXJg)
 
 # Cloud Database
 For this application, I used the Firebase realtime database. It is a NoSQL type of database which stores its data in a json-like format using nodes, rather than tables like one would see in a typical relational database.
